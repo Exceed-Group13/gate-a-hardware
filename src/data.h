@@ -7,23 +7,22 @@ const char *ssid = "POCOPHONE";
 const char *password = "a1b2c3d4";
 void Connect_Wifi()
 {
-    WiFi.begin(ssid, password);
-    Serial.print("Connecting to WiFi");
-    while (WiFi.status() != WL_CONNECTED)
-    {
-        delay(500);
-        Serial.print(".");
-    }
-    Serial.print("OK! IP=");
-    Serial.println(WiFi.localIP());
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to WiFi");
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.print("OK! IP=");
+  Serial.println(WiFi.localIP());
 }
-
 ///////////////////////////////////////////////////////////////
 const String baseUrl =
     "https://ecourse.cpe.ku.ac.th/exceed13";
 String result, house_name;
 JsonArray result_array, pin, new_pin;
-bool is_open, alert;
+bool temp_is_open,is_open;
 int delay_val;
 
 void GET_home()
@@ -40,13 +39,12 @@ void GET_home()
         Serial.println(payload);
         deserializeJson(doc, payload);
 
-        result_array = doc["result"].as<JsonArray>(); // set array
+        result_array = doc["result"].as<JsonArray>();
 
-        is_open = result_array[0]["state"].as<bool>();
+        temp_is_open = result_array[0]["state"].as<bool>();
         house_name = result_array[0]["house_name"].as<String>();
         delay_val = result_array[0]["delay"].as<int>();
         pin = result_array[0]["pin"].as<JsonArray>();
-        alert = result_array[0]["alert"].as<bool>();
     }
     else
     {
@@ -76,6 +74,35 @@ void PUT_home()
         Serial.print("Done");
         Serial.println();
     }
+    else
+    {
+        Serial.print("Error ");
+        Serial.println(httpResponseCode);
+    }
+
+    Serial.println("----------------------------------");
+}
+
+void GET_resetpin()
+{
+    DynamicJsonDocument doc(4096);
+    HTTPClient http;
+    const String url = baseUrl + "/resetpin";
+    http.begin(url);
+
+    int httpResponseCode = http.GET();
+    if (httpResponseCode == 200)
+    {
+        String payload = http.getString();
+        Serial.println(payload);
+        deserializeJson(doc, payload);
+
+        result_array = doc["result"].as<JsonArray>();
+
+        house_name = result_array[0]["house_name"].as<String>();
+        pin = result_array[0]["pin"].as<JsonArray>();
+    }
+
     else
     {
         Serial.print("Error ");
