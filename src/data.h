@@ -82,32 +82,3 @@ void PUT_home()
 
     Serial.println("----------------------------------");
 }
-
-void GET_resetpin()
-{
-    DynamicJsonDocument doc(4096);
-    HTTPClient http;
-    const String url = baseUrl + "/resetpin";
-    http.begin(url);
-
-    int httpResponseCode = http.GET();
-    if (httpResponseCode == 200)
-    {
-        String payload = http.getString();
-        Serial.println(payload);
-        deserializeJson(doc, payload);
-
-        result_array = doc["result"].as<JsonArray>();
-
-        house_name = result_array[0]["house_name"].as<String>();
-        pin = result_array[0]["pin"].as<JsonArray>();
-    }
-
-    else
-    {
-        Serial.print("Error ");
-        Serial.println(httpResponseCode);
-    }
-
-    Serial.println("----------------------------------");
-}
