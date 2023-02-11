@@ -45,7 +45,7 @@ int buzzerPin = 4;
 bool is_state_change = false;
 // Avoidance
 int laser = 22;
-int threshold = 3500;
+int threshold = 3000;
 bool is_ob = false;
 unsigned long time_now = 0;
 // timer
@@ -174,9 +174,10 @@ void obstacle(void *param)
       while (light_ldr < threshold)
       {
         Serial.println("OBSTACLE");
+        Serial.println(light_ldr);
         light_ldr = analogRead(LDR);
         time_now = millis();
-        while(millis() < time_now + 1000){
+        while(millis() < time_now + 700){
         //wait approx. [period] ms
         }
       }
@@ -355,21 +356,28 @@ void pin_c(void *param)
         }
         if (count == 3)
         {
-          goto_door = 1;
-          is_open = 0;
-          digitalWrite(led1, 0);
-          digitalWrite(led2, 0);
-          digitalWrite(led3, 0);
-          for (int i = 0; i < 70; i++)
+          if(!is_open)
           {
-            digitalWrite(buzzerPin, HIGH);
-            digitalWrite(led4, 1);
-            delay(50);
-            digitalWrite(buzzerPin, LOW);
-            digitalWrite(led4, 0);
-            delay(50);
+            goto_door = 1;
+            is_open = 0;
+            digitalWrite(led1, 0);
+            digitalWrite(led2, 0);
+            digitalWrite(led3, 0);
+            for (int i = 0; i < 70; i++)
+            {
+              digitalWrite(buzzerPin, HIGH);
+              digitalWrite(led4, 1);
+              delay(50);
+              digitalWrite(buzzerPin, LOW);
+              digitalWrite(led4, 0);
+              delay(50);
+            }
+            count = 0;
           }
-          count = 0;
+          else
+          {
+            Serial.println("WHAT?");
+          }
         }
       }
     }
