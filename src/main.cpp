@@ -45,7 +45,7 @@ int buzzerPin = 4;
 bool is_state_change = false;
 // Avoidance
 int laser = 22;
-int threshold = 3000;
+int threshold = 2900;
 bool is_ob = false;
 unsigned long time_now = 0;
 // timer
@@ -148,7 +148,7 @@ void time_count(void *param)
       }
       Serial.println(count_time);
       count_time++;
-      if (count_time == delay_val + 1)
+      if (count_time >= delay_val + 1)
       {
         is_time = 0;
         goto_door = 1;
@@ -347,6 +347,7 @@ void pin_c(void *param)
       else
       {
         count++;
+        Serial.println(count);
         for (int i = 0; i < 3; i++)
         {
           digitalWrite(buzzerPin, HIGH);
@@ -356,8 +357,6 @@ void pin_c(void *param)
         }
         if (count == 3)
         {
-          if(!is_open)
-          {
             goto_door = 1;
             is_open = 0;
             digitalWrite(led1, 0);
@@ -373,11 +372,7 @@ void pin_c(void *param)
               delay(50);
             }
             count = 0;
-          }
-          else
-          {
-            Serial.println("WHAT?");
-          }
+
         }
       }
     }
